@@ -10,11 +10,18 @@ def writeData():
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.SOL_TCP)
 	s.connect((readerIP, readerPort))
 
+class MainWindow(Ui_MainWindow):
+	def __init__(self):
+		super().__init__()
+		self.window = QMainWindow()
+		self.setupUi(self.window)
+		self.pushButton.connect(self.button_callback)
+		window.show()
+
+	def button_callback(self):
+		print("Worked!")
+
 if __name__ == "__main__":
 	app = QApplication(sys.argv)
-	window = QMainWindow()
-	ui = Ui_MainWindow()
-	ui.setupUi(window)
-
-	window.show()
+	w = MainWindow()	
 	sys.exit(app.exec_())
