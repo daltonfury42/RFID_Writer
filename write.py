@@ -79,7 +79,6 @@ class MainWindow(Ui_MainWindow):
 		self.window.show()
 
 		self.count = 0
-		self.lcdNumber.display(10)
 		self.lcdNumber.setStyleSheet("* { color: darkblue; background-color: black; }")
 
 	def button_callback(self):
@@ -92,13 +91,20 @@ class MainWindow(Ui_MainWindow):
 				output = "SUCCESSFULLY WORTE " + ret
 				self.textBrowser.setPlainText(output)
 				self.count += 1
+				self.lcdNumber.display(self.count)
+				with open("TagLog_" + time.strftime("%d%m%y") + ".csv") as fp:
+					fp.write(data + "," + time.strftime("%d/%m/%y %H:%M:%S"))
 			else:
 				output = "WRITE ERROR! Debug: Wrote " + ret
 				self.textBrowser.setPlainText(output)
+				with open("ErrorLog.csv" + time.strftime("%d%m%y") as fp:
+					fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S"))
 		except Exception as ex:
 			output = "Internal Exception: " + str(ex)
 			self.textBrowser.setPlainText(output)
-
+			with open("ErrorLog.csv" + time.strftime("%d%m%y") as fp:
+				fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S"))
+				
 	def sane(self, data):
 		"""Checks if the data is sane or not. Yet to be implimented."""
 		return True
