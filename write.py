@@ -19,33 +19,35 @@ def writeData(data, readerIP, readerPort):
 		b2 = (data[j*2])
 		b1 = (data[j*2+1])
 
-		print(type(b2))
+		# Sending Write request... 10,255,10,137,0,0,0,0,1, 7 - position to write in, byte1, byte2, CheckDigitValue
 
 		cmd = bytearray([10, 255, 10, 137, 0, 0, 0, 0, 1, 7 - j, ord(b1) ,ord(b2), CheckDigit(7-j, ord(b1), ord(b2))])
 		s.send(cmd)
 
+		# Reading response...
 		out = s.recv(2048)
 
-		# hex_string = "".join("%02x" % b for b in out)
-		# print("a: " + hex_string)
 		if out[3] == 82:
 			raise Exception('Write Error')
 
+	# Sending Read request...
 	cmd = bytearray([10, 255, 2, 128, 117])
 	s.send(cmd)
 
+	# Reading response
 	out = s.recv(2048)
 	cnt = out[5]
-	# print("b: " + out.decode("utf-8"))
 
+	# Sending get tag data request...
 	cmd = bytearray([10, 255, 3, 65, 16, 163])
 	s.send(cmd)
 
+	# Reading response
 	out = s.recv(2048)
 	out = out[::-1][1:dataLength+1].decode()
 	#hex_string = "".join("%02x" % b for b in out)
 	#final_string = hex_string[::-1][2:len(data)]
-	print("a:"  + out)	
+	
 	return out
 	
 
