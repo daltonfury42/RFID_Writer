@@ -30,6 +30,10 @@ def writeData(data, readerIP, readerPort):
 		if out[3] == 82:
 			raise Exception('Write Error')
 
+		return readData(readerIP, readerPort, dataLength)
+
+
+def readData(readerIP, readerPort, dataLength):
 	# Sending Read request...
 	cmd = bytearray([10, 255, 2, 128, 117])
 	s.send(cmd)
@@ -75,6 +79,8 @@ class MainWindow(Ui_MainWindow):
 		self.window.show()
 
 		self.count = 0
+		self.lcdNumber.display(10)
+		self.lcdNumber.setStyleSheet("* { color: darkblue; background-color: black; }")
 
 	def button_callback(self):
 		global readerPort, readerIP
@@ -85,6 +91,7 @@ class MainWindow(Ui_MainWindow):
 			if ret == data:
 				output = "SUCCESSFULLY WORTE " + ret
 				self.textBrowser.setPlainText(output)
+				self.count += 1
 			else:
 				output = "WRITE ERROR! Debug: Wrote " + ret
 				self.textBrowser.setPlainText(output)
