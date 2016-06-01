@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import socket
 import sys
 from writerGUI import Ui_MainWindow
