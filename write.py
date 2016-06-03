@@ -2,7 +2,9 @@
 import socket
 import sys
 from writerGUI import Ui_MainWindow
-from PyQt5.QtWidgets import QApplication, QDialog, QMainWindow
+from PyQt5.QtWidgets import QApplication, QDialog, QMainWindow, QShortcut
+from PyQt5.QtGui import QKeySequence
+from PyQt5.QtCore import Qt
 import time
 import re
 
@@ -85,13 +87,18 @@ class MainWindow(Ui_MainWindow):
 		super().__init__()
 		self.window = QMainWindow()
 		self.setupUi(self.window)
+		self.window.show()
+		self.window.move(300,300)
+
 		self.pushButton.setDefault(True)
 		self.pushButton.setAutoDefault(True)
 		self.pushButton.clicked.connect(self.button_callback)
-		self.window.show()
-		self.window.move(300,300)
+		self.enterShortcut = QShortcut(QKeySequence(Qt.Key_Return), self.window)
+		self.enterShortcut.activated.connect(self.button_callback)
+		
 		self.count = 0
 		self.lcdNumber.setStyleSheet("* { color: darkblue; background-color: black; }")
+
 		self.dataList = []
 		
 
