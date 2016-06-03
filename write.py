@@ -88,7 +88,7 @@ class MainWindow(Ui_MainWindow):
 		self.pushButton.setAutoDefault(True)
 		self.pushButton.clicked.connect(self.button_callback)
 		self.window.show()
-
+		self.window.move(300,300)
 		self.count = 0
 		self.lcdNumber.setStyleSheet("* { color: darkblue; background-color: black; }")
 		self.dataList = []
@@ -124,7 +124,7 @@ class MainWindow(Ui_MainWindow):
 		self.lineEdit.setFocus()
 		self.lineEdit.clear()
 				
-	def sane(self, data):
+	def removeZero(self, data):
 		"""Checks if the data is sane or not. Yet to be implimented."""
 		return True
 
