@@ -5,7 +5,7 @@ from writerGUI import Ui_MainWindow
 from PyQt5.QtWidgets import QApplication, QDialog, QMainWindow
 import time
 
-readerIP = "192.168.240.133"
+readerIP = "192.168.240.132"
 readerPort = 100
 logDirectory = 'logs'
 
@@ -32,7 +32,7 @@ def writeData(data, readerIP, readerPort):
 
 		if out[3] == 82:
 			raise Exception('Write Error: Check if item placed on the writer.')	#happened when no tag was there on the device.
-
+	
 	return readData(readerIP, readerPort, dataLength)
 
 
@@ -90,12 +90,13 @@ class MainWindow(Ui_MainWindow):
 		self.count = 0
 		self.lcdNumber.setStyleSheet("* { color: darkblue; background-color: black; }")
 
+
 	def button_callback(self):
 		global readerPort, readerIP, logDirectory
 		data = self.lineEdit.text();
 		try:
 			if self.sane(data):
-				ret = writeData(data, readerIP, readerPort)
+				ret = writeData(data, readerIP, readerPort)	
 			if ret == data:
 				output = "SUCCESSFULLY WORTE " + ret
 				self.textBrowser.setPlainText(output)
@@ -113,6 +114,8 @@ class MainWindow(Ui_MainWindow):
 			self.textBrowser.setPlainText(output)
 			with open(logDirectory + "/ErrorLog.csv" + time.strftime("%d%m%y"), "a+") as fp:
 				fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
+		self.lineEdit.setFocus()
+		self.lineEdit.clear()
 				
 	def sane(self, data):
 		"""Checks if the data is sane or not. Yet to be implimented."""
