@@ -18,7 +18,7 @@ def writeData(data, readerIP, readerPort):
 		s.connect((readerIP, readerPort))
 	except:
 		raise Exception('NetworkError: Socket creation failed.')
-	dataLength = len(data)
+
 	for i in range(12-len(data)):
 		data = data + chr(0)
 	for j in range(6):
@@ -36,10 +36,10 @@ def writeData(data, readerIP, readerPort):
 		if out[3] == 82:
 			raise Exception('Write Error: Check if item placed on the writer.')	#happened when no tag was there on the device.
 	
-	return readData(readerIP, readerPort, dataLength)
+	return readData(readerIP, readerPort)
 
 
-def readData(readerIP, readerPort, dataLength=12):
+def readData(readerIP, readerPort):
 	try:
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.SOL_TCP)
 		s.connect((readerIP, readerPort))
@@ -60,9 +60,9 @@ def readData(readerIP, readerPort, dataLength=12):
 
 	# Reading response
 	out = s.recv(2048)
-	out = out[::-1][1:dataLength+1].decode()
-	#hex_string = "".join("%02x" % b for b in out)
-	#final_string = hex_string[::-1][2:len(data)]
+	out = out[::-1][1:12+1].decode()
+	out = ''.join([c if ord(c) != 0 else '' for c in out])
+
 	
 	return out
 	
@@ -105,9 +105,8 @@ class MainWindow(Ui_MainWindow):
 		
 	def readButton_callback(self):
 		ret = readData(readerIP, readerPort)
-		output = ''.join([c if ord(c) != 0 else '' for c in ret])
 		self.textBrowser.setPlainText(output)
-		
+
 	def writeButton_callback(self):
 		global readerPort, readerIP, logDirectory
 		try:
