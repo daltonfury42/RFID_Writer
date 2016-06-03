@@ -29,7 +29,7 @@ def writeData(data, readerIP, readerPort):
 		out = s.recv(2048)
 
 		if out[3] == 82:
-			raise Exception('Write Error')	#happened when no tag was there on the device.
+			raise Exception('Write Error: Check if item placed on the writer.')	#happened when no tag was there on the device.
 
 	return readData(readerIP, readerPort, dataLength, s)
 
