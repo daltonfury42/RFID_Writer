@@ -84,12 +84,15 @@ class MainWindow(Ui_MainWindow):
 		super().__init__()
 		self.window = QMainWindow()
 		self.setupUi(self.window)
+		self.pushButton.setDefault(True)
+		self.pushButton.setAutoDefault(True)
 		self.pushButton.clicked.connect(self.button_callback)
 		self.window.show()
 
 		self.count = 0
 		self.lcdNumber.setStyleSheet("* { color: darkblue; background-color: black; }")
 		self.dataList = []
+		
 
 
 	def button_callback(self):
