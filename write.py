@@ -89,6 +89,7 @@ class MainWindow(Ui_MainWindow):
 
 		self.count = 0
 		self.lcdNumber.setStyleSheet("* { color: darkblue; background-color: black; }")
+		self.dataList = []
 
 
 	def button_callback(self):
@@ -100,10 +101,13 @@ class MainWindow(Ui_MainWindow):
 			if ret == data:
 				output = "SUCCESSFULLY WORTE " + ret
 				self.textBrowser.setPlainText(output)
-				self.count += 1
-				self.lcdNumber.display(self.count)
-				with open(logDirectory + "/TagLog_" + time.strftime("%d%m%y") + ".csv", "a+") as fp:
-					fp.write(data + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
+				if ret not in self.dataList:
+					self.dataList.append(ret)
+					self.count += 1
+					with open(logDirectory + "/TagLog_" + time.strftime("%d%m%y") + ".csv", "a+") as fp:
+						fp.write(data + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
+					self.lcdNumber.display(self.count)
+				
 			else:
 				output = "WRITE ERROR! Debug: Wrote " + ret
 				self.textBrowser.setPlainText(output)
