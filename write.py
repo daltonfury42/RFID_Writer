@@ -3,8 +3,8 @@ import socket
 import sys
 from writerGUI import Ui_MainWindow
 from PyQt5.QtWidgets import QApplication, QDialog, QMainWindow
-
-readerIP = "192.168.240.110"
+import time
+readerIP = "192.168.240.133"
 readerPort = 100
 
 def writeData(data, readerIP, readerPort):
@@ -29,12 +29,12 @@ def writeData(data, readerIP, readerPort):
 		out = s.recv(2048)
 
 		if out[3] == 82:
-			raise Exception('Write Error')
+			raise Exception('Write Error')	#happened when no tag was there on the device.
 
-		return readData(readerIP, readerPort, dataLength)
+	return readData(readerIP, readerPort, dataLength, s)
 
 
-def readData(readerIP, readerPort, dataLength):
+def readData(readerIP, readerPort, dataLength, s):
 	# Sending Read request...
 	cmd = bytearray([10, 255, 2, 128, 117])
 	s.send(cmd)
@@ -93,17 +93,17 @@ class MainWindow(Ui_MainWindow):
 				self.textBrowser.setPlainText(output)
 				self.count += 1
 				self.lcdNumber.display(self.count)
-				with open("TagLog_" + time.strftime("%d%m%y") + ".csv") as fp:
+				with open("TagLog_" + time.strftime("%d%m%y") + ".csv", "a+") as fp:
 					fp.write(data + "," + time.strftime("%d/%m/%y %H:%M:%S"))
 			else:
 				output = "WRITE ERROR! Debug: Wrote " + ret
 				self.textBrowser.setPlainText(output)
-				with open("ErrorLog.csv" + time.strftime("%d%m%y") as fp:
+				with open("ErrorLog.csv" + time.strftime("%d%m%y"), "a+") as fp:
 					fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S"))
 		except Exception as ex:
 			output = "Internal Exception: " + str(ex)
 			self.textBrowser.setPlainText(output)
-			with open("ErrorLog.csv" + time.strftime("%d%m%y") as fp:
+			with open("ErrorLog.csv" + time.strftime("%d%m%y"), "a+") as fp:
 				fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S"))
 				
 	def sane(self, data):
