@@ -39,7 +39,7 @@ def writeData(data, readerIP, readerPort):
 	return readData(readerIP, readerPort, dataLength)
 
 
-def readData(readerIP, readerPort, dataLength):
+def readData(readerIP, readerPort, dataLength=12):
 	try:
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.SOL_TCP)
 		s.connect((readerIP, readerPort))
@@ -92,18 +92,23 @@ class MainWindow(Ui_MainWindow):
 
 		self.pushButton.setDefault(True)
 		self.pushButton.setAutoDefault(True)
-		self.pushButton.clicked.connect(self.button_callback)
+		self.pushButton.clicked.connect(self.writeButton_callback)
 		self.enterShortcut = QShortcut(QKeySequence(Qt.Key_Return), self.window)
-		self.enterShortcut.activated.connect(self.button_callback)
+		self.enterShortcut.activated.connect(self.writeButton_callback)
+
+		self.readButton.clicked.connect(self.readButton_callback)
 		
 		self.count = 0
 		self.lcdNumber.setStyleSheet("* { color: darkblue; background-color: black; }")
 
 		self.dataList = []
 		
-
-
-	def button_callback(self):
+	def readButton_callback(self):
+		ret = readData(readerIP, readerPort)
+		output = ''.join([c if ord(c) != 0 else '' for c in ret])
+		self.textBrowser.setPlainText(output)
+		
+	def writeButton_callback(self):
 		global readerPort, readerIP, logDirectory
 		try:
 			data = self.lineEdit.text()

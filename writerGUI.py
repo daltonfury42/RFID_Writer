@@ -39,6 +39,9 @@ class Ui_MainWindow(object):
         self.verticalLayout.addLayout(self.horizontalLayout_2)
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.readButton = QtWidgets.QPushButton(self.centralwidget)
+        self.readButton.setObjectName("readButton")
+        self.horizontalLayout_3.addWidget(self.readButton)
         self.label_3 = QtWidgets.QLabel(self.centralwidget)
         self.label_3.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.label_3.setObjectName("label_3")
@@ -66,6 +69,7 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "Data :"))
         self.pushButton.setText(_translate("MainWindow", "Write"))
         self.label_2.setText(_translate("MainWindow", "Count:"))
+        self.readButton.setText(_translate("MainWindow", "Read"))
         self.label_3.setText(_translate("MainWindow", "Output:"))
         self.textBrowser.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
