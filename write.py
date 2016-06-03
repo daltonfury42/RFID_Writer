@@ -4,8 +4,10 @@ import sys
 from writerGUI import Ui_MainWindow
 from PyQt5.QtWidgets import QApplication, QDialog, QMainWindow
 import time
+
 readerIP = "192.168.240.133"
 readerPort = 100
+logDirectory = 'logs'
 
 def writeData(data, readerIP, readerPort):
 	try:
@@ -89,7 +91,7 @@ class MainWindow(Ui_MainWindow):
 		self.lcdNumber.setStyleSheet("* { color: darkblue; background-color: black; }")
 
 	def button_callback(self):
-		global readerPort, readerIP
+		global readerPort, readerIP, logDirectory
 		data = self.lineEdit.text();
 		try:
 			if self.sane(data):
@@ -99,17 +101,17 @@ class MainWindow(Ui_MainWindow):
 				self.textBrowser.setPlainText(output)
 				self.count += 1
 				self.lcdNumber.display(self.count)
-				with open("TagLog_" + time.strftime("%d%m%y") + ".csv", "a+") as fp:
+				with open(logDirectory + "/TagLog_" + time.strftime("%d%m%y") + ".csv", "a+") as fp:
 					fp.write(data + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
 			else:
 				output = "WRITE ERROR! Debug: Wrote " + ret
 				self.textBrowser.setPlainText(output)
-				with open("ErrorLog.csv" + time.strftime("%d%m%y"), "a+") as fp:
+				with open(logDirectory + "/ErrorLog.csv" + time.strftime("%d%m%y"), "a+") as fp:
 					fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
 		except Exception as ex:
 			output = "Internal Exception: " + str(ex)
 			self.textBrowser.setPlainText(output)
-			with open("ErrorLog.csv" + time.strftime("%d%m%y"), "a+") as fp:
+			with open(logDirectory + "/ErrorLog.csv" + time.strftime("%d%m%y"), "a+") as fp:
 				fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
 				
 	def sane(self, data):
