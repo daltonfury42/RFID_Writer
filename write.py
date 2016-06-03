@@ -4,6 +4,7 @@ import sys
 from writerGUI import Ui_MainWindow
 from PyQt5.QtWidgets import QApplication, QDialog, QMainWindow
 import time
+import re
 
 readerIP = "192.168.240.132"
 readerPort = 100
@@ -97,10 +98,10 @@ class MainWindow(Ui_MainWindow):
 
 	def button_callback(self):
 		global readerPort, readerIP, logDirectory
-		data = self.lineEdit.text();
 		try:
-			if self.sane(data):
-				ret = writeData(data, readerIP, readerPort)	
+			data = self.lineEdit.text()
+			data = self.removeZero(data)
+			ret = writeData(data, readerIP, readerPort)	
 			if ret == data:
 				output = "SUCCESSFULLY WORTE " + ret
 				self.textBrowser.setPlainText(output)
@@ -125,8 +126,7 @@ class MainWindow(Ui_MainWindow):
 		self.lineEdit.clear()
 				
 	def removeZero(self, data):
-		"""Checks if the data is sane or not. Yet to be implimented."""
-		return True
+		return ''.join(re.search(r'^(\D*)0*(.*)$', data).groups())
 
 if __name__ == "__main__":
 	app = QApplication(sys.argv)
