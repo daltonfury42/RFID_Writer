@@ -31,10 +31,16 @@ def writeData(data, readerIP, readerPort):
 		if out[3] == 82:
 			raise Exception('Write Error: Check if item placed on the writer.')	#happened when no tag was there on the device.
 
-	return readData(readerIP, readerPort, dataLength, s)
+	return readData(readerIP, readerPort, dataLength)
 
 
-def readData(readerIP, readerPort, dataLength, s):
+def readData(readerIP, readerPort, dataLength):
+	try:
+		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.SOL_TCP)
+		s.connect((readerIP, readerPort))
+	except:
+		raise Exception('NetworkError: Socket creation failed.')
+
 	# Sending Read request...
 	cmd = bytearray([10, 255, 2, 128, 117])
 	s.send(cmd)
@@ -94,17 +100,17 @@ class MainWindow(Ui_MainWindow):
 				self.count += 1
 				self.lcdNumber.display(self.count)
 				with open("TagLog_" + time.strftime("%d%m%y") + ".csv", "a+") as fp:
-					fp.write(data + "," + time.strftime("%d/%m/%y %H:%M:%S"))
+					fp.write(data + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
 			else:
 				output = "WRITE ERROR! Debug: Wrote " + ret
 				self.textBrowser.setPlainText(output)
 				with open("ErrorLog.csv" + time.strftime("%d%m%y"), "a+") as fp:
-					fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S"))
+					fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
 		except Exception as ex:
 			output = "Internal Exception: " + str(ex)
 			self.textBrowser.setPlainText(output)
 			with open("ErrorLog.csv" + time.strftime("%d%m%y"), "a+") as fp:
-				fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S"))
+				fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
 				
 	def sane(self, data):
 		"""Checks if the data is sane or not. Yet to be implimented."""
