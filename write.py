@@ -26,7 +26,6 @@ readerPort = 100
 logDirectory = 'logs'
 
 def writeData(data, readerIP, readerPort):
-
 	print("WRITE DATA")
 	try:
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.SOL_TCP)
@@ -81,7 +80,10 @@ def readData(readerIP, readerPort):
 		raise Exception("WARNING: More than one tags in range!!!")
 	elif out[4] == 0:
 		raise Exception("WARNING: No tags in range!!!")
-	out = out[7:7+12][::-1].decode()
+	out = out[7:7+12][::-1]
+	if out[1] == 0x9e:
+		raise Exception("WARNING: Attempted to read empty tag.")
+	out = out.decode()
 	out = ''.join([c if ord(c) != 0 else '' for c in out])
 
 	
