@@ -104,7 +104,7 @@ class MainWindow(Ui_MainWindow):
 		self.dataList = []
 		
 	def readButton_callback(self):
-		ret = readData(readerIP, readerPort)
+		output = readData(readerIP, readerPort)
 		self.textBrowser.setPlainText(output)
 
 	def writeButton_callback(self):
