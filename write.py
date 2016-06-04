@@ -84,6 +84,7 @@ def CheckDigit(a, b, c):
 
 class MainWindow(Ui_MainWindow):
 	def __init__(self):
+		global logDirectory
 		super().__init__()
 		self.window = QMainWindow()
 		self.setupUi(self.window)
@@ -97,12 +98,23 @@ class MainWindow(Ui_MainWindow):
 		self.enterShortcut.activated.connect(self.writeButton_callback)
 
 		self.readButton.clicked.connect(self.readButton_callback)
-		
-		self.count = 0
-		self.lcdNumber.setStyleSheet("* { color: darkblue; background-color: black; }")
 
 		self.dataList = []
+		try:
+			self.count = sum(1 for line in open(logDirectory + "/TagLog_" + time.strftime("%d%m%y") + ".csv"))
+			self.lcdNumber.display(self.count)
+			with open(logDirectory + "/TagLog_" + time.strftime("%d%m%y") + ".csv") as fp:
+				for line in fp:
+					self.dataList.append(line.split(',')[0])
+		except FileNotFoundError:
+			self.count = 0
+			self.textBrowser.setPlainText("Message: STARTING A NEW LOG")
+
+		self.lcdNumber.setStyleSheet("* { color: darkblue; background-color: black; }")
+
 		
+		
+
 	def readButton_callback(self):
 		output = readData(readerIP, readerPort)
 		self.textBrowser.setPlainText(output)
