@@ -8,11 +8,25 @@ from PyQt5.QtCore import Qt
 import time
 import re
 
+import linecache
+import sys
+
+def PrintException():
+    exc_type, exc_obj, tb = sys.exc_info()
+    f = tb.tb_frame
+    lineno = tb.tb_lineno
+    filename = f.f_code.co_filename
+    linecache.checkcache(filename)
+    line = linecache.getline(filename, lineno, f.f_globals)
+    print ('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(filename, lineno, line.strip(), exc_obj))
+
+
 readerIP = "192.168.240.132"
 readerPort = 100
 logDirectory = 'logs'
 
 def writeData(data, readerIP, readerPort):
+	print("WRITE DATA")
 	try:
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.SOL_TCP)
 		s.connect((readerIP, readerPort))
@@ -26,13 +40,13 @@ def writeData(data, readerIP, readerPort):
 		b1 = (data[j*2+1])
 
 		# Sending Write request... 10,255,10,137,0,0,0,0,1, 7 - position to write in, byte1, byte2, CheckDigitValue
-
+		print("Writing 2 bytes")
 		cmd = bytearray([10, 255, 10, 137, 0, 0, 0, 0, 1, 7 - j, ord(b1) ,ord(b2), CheckDigit(7-j, ord(b1), ord(b2))])
 		s.send(cmd)
 
 		# Reading response...
 		out = s.recv(2048)
-
+		print("Response: " + " ".join("%02x" % b for b in out))
 		if out[3] == 82:
 			raise Exception('Write Error: Check if item placed on the writer.')	#happened when no tag was there on the device.
 	
@@ -46,21 +60,23 @@ def readData(readerIP, readerPort):
 	except:
 		raise Exception('NetworkError: Socket creation failed.')
 
-	# Sending Read request...
+	print("Sending Read request.")
 	cmd = bytearray([10, 255, 2, 128, 117])
 	s.send(cmd)
 
 	# Reading response
 	out = s.recv(2048)
 	cnt = out[5]
+	print("Response: " + " ".join("%02x" % b for b in out))
 
-	# Sending get tag data request...
+	print("Sending get tag data request.")
 	cmd = bytearray([10, 255, 3, 65, 16, 163])
 	s.send(cmd)
 
 	# Reading response
 	out = s.recv(2048)
-	out = out[::-1][1:12+1].decode()
+	print("Response: " + " ".join("%02x" % b for b in out))
+	out = out[7:7+12][::-1].decode()
 	out = ''.join([c if ord(c) != 0 else '' for c in out])
 
 	
@@ -145,6 +161,7 @@ class MainWindow(Ui_MainWindow):
 			self.textBrowser.setPlainText(output)
 			with open(logDirectory + "/ErrorLog.csv" + time.strftime("%d%m%y"), "a+") as fp:
 				fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
+			PrintException()	
 		self.lineEdit.setFocus()
 		self.lineEdit.clear()
 				
