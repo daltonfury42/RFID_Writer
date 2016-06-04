@@ -26,6 +26,7 @@ readerPort = 100
 logDirectory = 'logs'
 
 def writeData(data, readerIP, readerPort):
+
 	print("WRITE DATA")
 	try:
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.SOL_TCP)
@@ -76,6 +77,10 @@ def readData(readerIP, readerPort):
 	# Reading response
 	out = s.recv(2048)
 	print("Response: " + " ".join("%02x" % b for b in out))
+	if out[4] > 1:
+		raise Exception("WARNING: More than one tags in range!!!")
+	elif out[4] == 0:
+		raise Exception("WARNING: No tags in range!!!")
 	out = out[7:7+12][::-1].decode()
 	out = ''.join([c if ord(c) != 0 else '' for c in out])
 
@@ -132,8 +137,15 @@ class MainWindow(Ui_MainWindow):
 		
 
 	def readButton_callback(self):
-		output = readData(readerIP, readerPort)
-		self.textBrowser.setPlainText(output)
+		try:
+			output = readData(readerIP, readerPort)
+			self.textBrowser.setPlainText(output)
+		except Exception as ex:
+			output = "Internal Exception: " + str(ex)
+			self.textBrowser.setPlainText(output)
+			with open(logDirectory + "/ErrorLog.csv" + time.strftime("%d%m%y"), "a+") as fp:
+				fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
+			PrintException()	
 
 	def writeButton_callback(self):
 		global readerPort, readerIP, logDirectory
