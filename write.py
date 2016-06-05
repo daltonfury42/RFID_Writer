@@ -21,7 +21,7 @@ def PrintException():
     print ('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(filename, lineno, line.strip(), exc_obj))
 
 
-readerIP = "192.168.240.132"
+readerIP = "192.168.240.110"
 readerPort = 100
 logDirectory = 'logs'
 
@@ -180,7 +180,7 @@ class MainWindow(Ui_MainWindow):
 		self.lineEdit.clear()
 				
 	def removeZero(self, data):
-		return ''.join(re.search(r'^(\D*)0*(.*)$', data).groups())
+		return ''.join(re.search(r'^([A-Z]*)[0 ]*(\d*)$', data).groups())
 
 if __name__ == "__main__":
 	app = QApplication(sys.argv)
