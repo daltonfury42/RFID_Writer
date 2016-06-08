@@ -124,15 +124,16 @@ class MainWindow(Ui_MainWindow):
 
 		self.dataList = []
 		try:
-			self.count = sum(1 for line in open(logDirectory + "/TagLog_" + time.strftime("%d%m%y") + ".csv"))
-			self.lcdNumber.display(self.count)
+            self.count = 0
 			with open(logDirectory + "/TagLog_" + time.strftime("%d%m%y") + ".csv") as fp:
 				for line in fp:
-					self.dataList.append(line.split(',')[0])
+                    if re.search(r'\d{2}/\d{2}/\d{2}', line):  
+                        self.count += 1
+    					self.dataList.append(line.split(',')[1])
 		except FileNotFoundError:
-			self.count = 0
 			self.textBrowser.setPlainText("Message: STARTING A NEW LOG")
 
+		self.lcdNumber.display(self.count)
 		self.lcdNumber.setStyleSheet("* { color: darkblue; background-color: black; }")
 
 		
@@ -154,13 +155,13 @@ class MainWindow(Ui_MainWindow):
 		try:
 			data = self.lineEdit.text()
 			if re.search(r'$\d{13}|\d{10}$', data):		#data entered is ISBN
-				self.textBrowser.setPlainText("ISBN: " + data + ",")
+				self.textBrowser.setPlainText("ISBN: " + data)
 				with open(logDirectory + "/TagLog_" + time.strftime("%d%m%y") + ".csv", "a+") as fp:
-					fp.write(data)
+					fp.write(data + ",")
 			else:
 				data = self.removeZero(data)
 				if not re.search(r'^[A-Z]{0,2}\d{1,5}$',data):
-					self.textBrowser.append('<p style="color:red;">INVALID INPUT</p>')
+					self.textBrowser.append('<p style="color:r76778ed;">INVALID INPUT</p>')
 				else:
 					ret = writeData(data, readerIP, readerPort)	
 					if ret == data:
