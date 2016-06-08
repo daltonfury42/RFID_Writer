@@ -21,7 +21,7 @@ def PrintException():
     print ('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(filename, lineno, line.strip(), exc_obj))
 
 
-readerIP = "192.168.240.110"
+readerIP = "192.168.240.132"
 readerPort = 100
 logDirectory = 'logs'
 
@@ -144,7 +144,7 @@ class MainWindow(Ui_MainWindow):
 			self.textBrowser.setPlainText(output)
 		except Exception as ex:
 			output = "Internal Exception: " + str(ex)
-			self.textBrowser.setPlainText('<p style="color:red;">' + output '</p>')
+			self.textBrowser.setPlainText('<p style="color:red;">' + output + '</p>')
 			with open(logDirectory + "/ErrorLog.csv" + time.strftime("%d%m%y"), "a+") as fp:
 				fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
 			PrintException()	
@@ -154,7 +154,7 @@ class MainWindow(Ui_MainWindow):
 		try:
 			data = self.lineEdit.text()
 			if re.search(r'$\d{13}|\d{10}$', data):		#data entered is ISBN
-				self.textBrowser.setPlainText("ISBN: " + data)
+				self.textBrowser.setPlainText("ISBN: " + data + ",")
 				with open(logDirectory + "/TagLog_" + time.strftime("%d%m%y") + ".csv", "a+") as fp:
 					fp.write(data)
 			else:
@@ -180,7 +180,7 @@ class MainWindow(Ui_MainWindow):
 							fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
 		except Exception as ex:
 			output = "Internal Exception: " + str(ex)
-			self.textBrowser.setPlainText('<p style="color:red;">' + output + '</p>')
+			self.textBrowser.setPlainText('<p style="color:red;"> ' + output + ' </p>')
 			with open(logDirectory + "/ErrorLog.csv" + time.strftime("%d%m%y"), "a+") as fp:
 				fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
 			PrintException()	
