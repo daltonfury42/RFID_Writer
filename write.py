@@ -144,7 +144,7 @@ class MainWindow(Ui_MainWindow):
 			self.textBrowser.setPlainText(output)
 		except Exception as ex:
 			output = "Internal Exception: " + str(ex)
-			self.textBrowser.setPlainText(output)
+			self.textBrowser.setPlainText('<p style="color:red;">' + output '</p>')
 			with open(logDirectory + "/ErrorLog.csv" + time.strftime("%d%m%y"), "a+") as fp:
 				fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
 			PrintException()	
@@ -175,12 +175,12 @@ class MainWindow(Ui_MainWindow):
 						
 					else:
 						output = "WRITE ERROR! Debug: Wrote " + ret
-						self.textBrowser.setPlainText(output)
+						self.textBrowser.setPlainText('<p style="color:red;">' + output + "</p>")
 						with open(logDirectory + "/ErrorLog.csv" + time.strftime("%d%m%y"), "a+") as fp:
 							fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
 		except Exception as ex:
 			output = "Internal Exception: " + str(ex)
-			self.textBrowser.setPlainText(output)
+			self.textBrowser.setPlainText('<p style="color:red;">' + output + '</p>')
 			with open(logDirectory + "/ErrorLog.csv" + time.strftime("%d%m%y"), "a+") as fp:
 				fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
 			PrintException()	
