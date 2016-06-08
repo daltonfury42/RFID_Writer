@@ -124,12 +124,12 @@ class MainWindow(Ui_MainWindow):
 
 		self.dataList = []
 		try:
-            self.count = 0
+			self.count = 0
 			with open(logDirectory + "/TagLog_" + time.strftime("%d%m%y") + ".csv") as fp:
 				for line in fp:
-                    if re.search(r'\d{2}/\d{2}/\d{2}', line):  
-                        self.count += 1
-    					self.dataList.append(line.split(',')[1])
+					if re.search(r'\d{2}/\d{2}/\d{2}', line):  
+						self.count += 1
+						self.dataList.append(line.split(',')[1])
 		except FileNotFoundError:
 			self.textBrowser.setPlainText("Message: STARTING A NEW LOG")
 
