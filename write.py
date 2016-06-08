@@ -7,7 +7,7 @@ from PyQt5.QtGui import QKeySequence
 from PyQt5.QtCore import Qt
 import time
 import re
-
+import wave
 import linecache
 import sys
 
@@ -153,23 +153,31 @@ class MainWindow(Ui_MainWindow):
 		global readerPort, readerIP, logDirectory
 		try:
 			data = self.lineEdit.text()
-			data = self.removeZero(data)
-			ret = writeData(data, readerIP, readerPort)	
-			if ret == data:
-				output = "SUCCESSFULLY WORTE " + ret
-				self.textBrowser.setPlainText(output)
-				if ret not in self.dataList:
-					self.dataList.append(ret)
-					self.count += 1
-					with open(logDirectory + "/TagLog_" + time.strftime("%d%m%y") + ".csv", "a+") as fp:
-						fp.write(data + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
-					self.lcdNumber.display(self.count)
-				
+			if re.search(r'$\d{13}|\d{10}$', data):		#data entered is ISBN
+				self.textBrowser.setPlainText("ISBN: " + data)
+				with open(logDirectory + "/TagLog_" + time.strftime("%d%m%y") + ".csv", "a+") as fp:
+					fp.write(data)
 			else:
-				output = "WRITE ERROR! Debug: Wrote " + ret
-				self.textBrowser.setPlainText(output)
-				with open(logDirectory + "/ErrorLog.csv" + time.strftime("%d%m%y"), "a+") as fp:
-					fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
+				data = self.removeZero(data)
+				if not re.search(r'^[A-Z]{0,2}\d{1,5}$',data):
+					self.textBrowser.append('<p style="color:red;">INVALID INPUT</p>')
+				else:
+					ret = writeData(data, readerIP, readerPort)	
+					if ret == data:
+						output = "\nSUCCESSFULLY WORTE " + ret
+						self.textBrowser.append(output)
+						if ret not in self.dataList:
+							self.dataList.append(ret)
+							self.count += 1
+							with open(logDirectory + "/TagLog_" + time.strftime("%d%m%y") + ".csv", "a+") as fp:
+								fp.write(data + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
+							self.lcdNumber.display(self.count)
+						
+					else:
+						output = "WRITE ERROR! Debug: Wrote " + ret
+						self.textBrowser.setPlainText(output)
+						with open(logDirectory + "/ErrorLog.csv" + time.strftime("%d%m%y"), "a+") as fp:
+							fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
 		except Exception as ex:
 			output = "Internal Exception: " + str(ex)
 			self.textBrowser.setPlainText(output)
@@ -180,8 +188,10 @@ class MainWindow(Ui_MainWindow):
 		self.lineEdit.clear()
 				
 	def removeZero(self, data):
-		return ''.join(re.search(r'^([A-Z]*)[0 ]*(\d*)$', data).groups())
-
+		try:
+			return ''.join(re.search(r'^([A-Z]*)[0 ]*(\d*)$', data).groups())
+		except:
+			return data
 if __name__ == "__main__":
 	app = QApplication(sys.argv)
 	w = MainWindow()	
