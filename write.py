@@ -144,7 +144,7 @@ class MainWindow(Ui_MainWindow):
 			self.textBrowser.setPlainText(output)
 		except Exception as ex:
 			output = "Internal Exception: " + str(ex)
-			self.textBrowser.setPlainText('<p style="color:red;">' + output '</p>')
+			self.textBrowser.setPlainText('<p style="color:red;">' + output + '</p>')
 			with open(logDirectory + "/ErrorLog.csv" + time.strftime("%d%m%y"), "a+") as fp:
 				fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
 			PrintException()	
