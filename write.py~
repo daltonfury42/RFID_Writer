@@ -7,7 +7,7 @@ from PyQt5.QtGui import QKeySequence
 from PyQt5.QtCore import Qt
 import time
 import re
-
+import wave
 import linecache
 import sys
 
@@ -21,7 +21,7 @@ def PrintException():
     print ('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(filename, lineno, line.strip(), exc_obj))
 
 
-readerIP = "192.168.240.132"
+readerIP = "192.168.240.110"
 readerPort = 100
 logDirectory = 'logs'
 
@@ -124,15 +124,16 @@ class MainWindow(Ui_MainWindow):
 
 		self.dataList = []
 		try:
-			self.count = sum(1 for line in open(logDirectory + "/TagLog_" + time.strftime("%d%m%y") + ".csv"))
-			self.lcdNumber.display(self.count)
+			self.count = 0
 			with open(logDirectory + "/TagLog_" + time.strftime("%d%m%y") + ".csv") as fp:
 				for line in fp:
-					self.dataList.append(line.split(',')[0])
+					if re.search(r'\d{2}/\d{2}/\d{2}', line):  
+						self.count += 1
+						self.dataList.append(line.split(',')[0])
 		except FileNotFoundError:
-			self.count = 0
 			self.textBrowser.setPlainText("Message: STARTING A NEW LOG")
 
+		self.lcdNumber.display(self.count)
 		self.lcdNumber.setStyleSheet("* { color: darkblue; background-color: black; }")
 
 		
@@ -144,7 +145,7 @@ class MainWindow(Ui_MainWindow):
 			self.textBrowser.setPlainText(output)
 		except Exception as ex:
 			output = "Internal Exception: " + str(ex)
-			self.textBrowser.setPlainText(output)
+			self.textBrowser.setPlainText('<p style="color:red;">' + output + '</p>')
 			with open(logDirectory + "/ErrorLog.csv" + time.strftime("%d%m%y"), "a+") as fp:
 				fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
 			PrintException()	
@@ -153,26 +154,34 @@ class MainWindow(Ui_MainWindow):
 		global readerPort, readerIP, logDirectory
 		try:
 			data = self.lineEdit.text()
-			data = self.removeZero(data)
-			ret = writeData(data, readerIP, readerPort)	
-			if ret == data:
-				output = "SUCCESSFULLY WORTE " + ret
-				self.textBrowser.setPlainText(output)
-				if ret not in self.dataList:
-					self.dataList.append(ret)
-					self.count += 1
-					with open(logDirectory + "/TagLog_" + time.strftime("%d%m%y") + ".csv", "a+") as fp:
-						fp.write(data + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
-					self.lcdNumber.display(self.count)
-				
+			if re.search(r'$\d{13}|\d{10}$', data):		#data entered is ISBN
+				self.textBrowser.setPlainText("ISBN: " + data)
+				with open(logDirectory + "/TagLog_" + time.strftime("%d%m%y") + ".csv", "a+") as fp:
+					fp.write(data + "\n")
 			else:
-				output = "WRITE ERROR! Debug: Wrote " + ret
-				self.textBrowser.setPlainText(output)
-				with open(logDirectory + "/ErrorLog.csv" + time.strftime("%d%m%y"), "a+") as fp:
-					fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
+				data = self.removeZero(data)
+				if not re.search(r'^[A-Z]{0,2}\d{1,5}$',data):
+					self.textBrowser.append('<p style="color:r76778ed;">INVALID INPUT</p>')
+				else:
+					ret = writeData(data, readerIP, readerPort)	
+					if ret == data:
+						output = "\nSUCCESSFULLY WORTE " + ret
+						self.textBrowser.append(output)
+						if ret not in self.dataList:
+							self.dataList.append(ret)
+							self.count += 1
+							with open(logDirectory + "/TagLog_" + time.strftime("%d%m%y") + ".csv", "a+") as fp:
+								fp.write(data + "," + time.strftime("%d/%m/%y %H:%M:%S") + ',')
+							self.lcdNumber.display(self.count)
+						
+					else:
+						output = "WRITE ERROR! Debug: Wrote " + ret
+						self.textBrowser.setPlainText('<p style="color:red;">' + output + "</p>")
+						with open(logDirectory + "/ErrorLog.csv" + time.strftime("%d%m%y"), "a+") as fp:
+							fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
 		except Exception as ex:
 			output = "Internal Exception: " + str(ex)
-			self.textBrowser.setPlainText(output)
+			self.textBrowser.setPlainText('<p style="color:red;"> ' + output + ' </p>')
 			with open(logDirectory + "/ErrorLog.csv" + time.strftime("%d%m%y"), "a+") as fp:
 				fp.write(output + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
 			PrintException()	
@@ -180,8 +189,10 @@ class MainWindow(Ui_MainWindow):
 		self.lineEdit.clear()
 				
 	def removeZero(self, data):
-		return ''.join(re.search(r'^(\D*)0*(.*)$', data).groups())
-
+		try:
+			return ''.join(re.search(r'^([A-Z]*)[0 ]*(\d*)$', data).groups())
+		except:
+			return data
 if __name__ == "__main__":
 	app = QApplication(sys.argv)
 	w = MainWindow()	
