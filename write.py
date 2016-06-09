@@ -165,7 +165,7 @@ class MainWindow(Ui_MainWindow):
 				else:
 					ret = writeData(data, readerIP, readerPort)	
 					if ret == data:
-						output = "\nSUCCESSFULLY WORTE " + ret
+						output = "\nSUCCESSFULLY WROTE " + ret
 						self.textBrowser.append(output)
 						if ret not in self.dataList:
 							self.dataList.append(ret)
