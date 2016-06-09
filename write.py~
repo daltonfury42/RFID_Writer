@@ -155,7 +155,7 @@ class MainWindow(Ui_MainWindow):
 		try:
 			data = self.lineEdit.text()
 			if re.search(r'$\d{13}|\d{10}$', data):		#data entered is ISBN
-				self.textBrowser.setPlainText("ISBN: " + data)
+				self.textBrowser.append("ISBN: " + data)
 				with open(logDirectory + "/TagLog_" + time.strftime("%d%m%y") + ".csv", "a+") as fp:
 					fp.write(data + "\n")
 			else:
@@ -165,8 +165,13 @@ class MainWindow(Ui_MainWindow):
 				else:
 					ret = writeData(data, readerIP, readerPort)	
 					if ret == data:
+<<<<<<< HEAD
 						output = "\nSUCCESSFULLY WORTE " + ret
+						self.textBrowser.setPlainText(output)
+=======
+						output = "\nSUCCESSFULLY WROTE " + ret
 						self.textBrowser.append(output)
+>>>>>>> 2e5984dede6fa3f392f4069980b60c61c1b43ec1
 						if ret not in self.dataList:
 							self.dataList.append(ret)
 							self.count += 1
