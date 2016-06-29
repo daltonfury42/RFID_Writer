@@ -190,7 +190,7 @@ class MainWindow(Ui_MainWindow):
 				
 	def removeZero(self, data):
 		try:
-			return ''.join(re.search(r'^([A-Z]*)[0 ]*(\d*)$', data).groups())
+			return ''.join(re.search(r'^([A-Z]*)[0 ]*(\d+)$', data).groups())
 		except:
 			return data
 if __name__ == "__main__":
