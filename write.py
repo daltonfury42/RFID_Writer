@@ -21,7 +21,7 @@ def PrintException():
     print ('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(filename, lineno, line.strip(), exc_obj))
 
 
-readerIP = "192.168.240.132"
+readerIP = "192.168.240.110"
 readerPort = 100
 logDirectory = 'logs'
 
@@ -129,7 +129,7 @@ class MainWindow(Ui_MainWindow):
 				for line in fp:
 					if re.search(r'\d{2}/\d{2}/\d{2}', line):  
 						self.count += 1
-						self.dataList.append(line.split(',')[1])
+						self.dataList.append(line.split(',')[0])
 		except FileNotFoundError:
 			self.textBrowser.setPlainText("Message: STARTING A NEW LOG")
 
@@ -155,9 +155,9 @@ class MainWindow(Ui_MainWindow):
 		try:
 			data = self.lineEdit.text()
 			if re.search(r'$\d{13}|\d{10}$', data):		#data entered is ISBN
-				self.textBrowser.setPlainText("ISBN: " + data)
+				self.textBrowser.append("ISBN: " + data)
 				with open(logDirectory + "/TagLog_" + time.strftime("%d%m%y") + ".csv", "a+") as fp:
-					fp.write(data + ",")
+					fp.write(data + "\n")
 			else:
 				data = self.removeZero(data)
 				if not re.search(r'^[A-Z]{0,2}\d{1,5}$',data):
@@ -165,13 +165,15 @@ class MainWindow(Ui_MainWindow):
 				else:
 					ret = writeData(data, readerIP, readerPort)	
 					if ret == data:
-						output = "\nSUCCESSFULLY WROTE " + ret
-						self.textBrowser.append(output)
+
+						output = "\nSUCCESSFULLY WORTE " + ret
+						self.textBrowser.setPlainText(output)
+
 						if ret not in self.dataList:
 							self.dataList.append(ret)
 							self.count += 1
 							with open(logDirectory + "/TagLog_" + time.strftime("%d%m%y") + ".csv", "a+") as fp:
-								fp.write(data + "," + time.strftime("%d/%m/%y %H:%M:%S") + '\n')
+								fp.write(data + "," + time.strftime("%d/%m/%y %H:%M:%S") + ',')
 							self.lcdNumber.display(self.count)
 						
 					else:
