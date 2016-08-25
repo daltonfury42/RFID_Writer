@@ -21,7 +21,7 @@ def PrintException():
     print ('EXCEPTION IN ({}, LINE {} "{}"): {}'.format(filename, lineno, line.strip(), exc_obj))
 
 
-readerIP = "192.168.240.110"
+readerIP = "192.168.240.131"
 readerPort = 100
 logDirectory = 'logs'
 
@@ -121,7 +121,7 @@ class MainWindow(Ui_MainWindow):
 		self.enterShortcut.activated.connect(self.writeButton_callback)
 
 		self.readButton.clicked.connect(self.readButton_callback)
-
+		self.pushButton_2.clicked.connect(self.patronWriteButton_callback)
 		self.dataList = []
 		try:
 			self.count = 0
@@ -138,6 +138,24 @@ class MainWindow(Ui_MainWindow):
 
 		
 		
+	def patronWriteButton_callback(self):
+		global readerPort, readerIP, logDirectory
+		try:
+			data = chr(1) + self.lineEdit.text()
+			ret = writeData(data, readerIP, readerPort)	
+			if ret == data:
+				output = "\nSUCCESSFULLY WORTE " + ret
+				self.textBrowser.setPlainText(output)
+			else:
+				output = "WRITE ERROR! Debug: Wrote " + ret
+				self.textBrowser.setPlainText('<p style="color:red;">' + output + "</p>")
+		except Exception as ex:
+			output = "Internal Exception: " + str(ex)
+			self.textBrowser.setPlainText('<p style="color:red;"> ' + output + ' </p>')
+			PrintException()	
+		self.lineEdit.setFocus()
+		self.lineEdit.clear()
+
 
 	def readButton_callback(self):
 		try:
